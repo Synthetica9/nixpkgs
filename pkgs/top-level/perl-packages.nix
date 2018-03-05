@@ -10735,7 +10735,8 @@ let self = _self // overrides; _self = with self; {
       sha256 = "1q3lz168q081iwl9jg21fbzhp9la79gav9mv6nmh2jab83s2l3mj";
     };
 
-    buildInputs = with pkgs; [ mesa mesa_glu freeglut xorg.libX11 xorg.libXi xorg.libXmu xorg.libXext xdummy ];
+    # FIXME: try with libGL + libGLU instead of libGLU_combined
+    buildInputs = with pkgs; [ libGLU_combined libGLU freeglut xorg.libX11 xorg.libXi xorg.libXmu xorg.libXext xdummy ];
 
     patches = [ ../development/perl-modules/perl-opengl.patch ];
 
@@ -14722,6 +14723,16 @@ let self = _self // overrides; _self = with self; {
       sha256 = "0dig1zlglm8rwm8fhnz087lx6gixj9jx10kxn1fx3swdkfblhsmf";
     };
     perlPreHook = "export LD=$CC";
+    perlPostHook = stdenv.lib.optionalString stdenv.isDarwin ''
+      oldPath="$(pwd)/btparse/src/libbtparse.dylib"
+      newPath="$out/lib/libbtparse.dylib"
+
+      install_name_tool -id "$newPath" "$newPath"
+      install_name_tool -change "$oldPath" "$newPath" "$out/bin/biblex"
+      install_name_tool -change "$oldPath" "$newPath" "$out/bin/bibparse"
+      install_name_tool -change "$oldPath" "$newPath" "$out/bin/dumpnames"
+      install_name_tool -change "$oldPath" "$newPath" "$out/lib/perl5/site_perl/5.24.3/darwin-2level/auto/Text/BibTeX/BibTeX.bundle"
+    '';
     meta = {
       description = "Interface to read and parse BibTeX files";
       license = with stdenv.lib.licenses; [ artistic1 gpl1Plus ];
@@ -15989,7 +16000,7 @@ let self = _self // overrides; _self = with self; {
       url = "mirror://cpan/authors/id/M/MB/MBARBON/${name}.tar.gz";
       sha256 = "1q4gvj4gdx4l8k4mkgiix24p9mdfy1miv7abidf0my3gy2gw5lka";
     };
-    propagatedBuildInputs = [ Wx OpenGL pkgs.mesa_glu ];
+    propagatedBuildInputs = [ Wx OpenGL pkgs.libGLU ];
     doCheck = false;
   };
 
