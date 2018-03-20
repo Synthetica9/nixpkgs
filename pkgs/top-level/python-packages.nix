@@ -8810,7 +8810,7 @@ in {
   keyutils = callPackage ../development/python-modules/keyutils { };
 
   klein = callPackage ../development/python-modules/klein { };
- 
+
   koji = callPackage ../development/python-modules/koji { };
 
   kombu = buildPythonPackage rec {
@@ -20203,6 +20203,26 @@ EOF
   pytoml = callPackage ../development/python-modules/pytoml { };
 
   pypandoc = callPackage ../development/python-modules/pypandoc { };
+
+  mdv = buildPythonPackage rec {
+    pname = "mdv";
+    name = "${pname}-${version}";
+    version = "1.6.3";
+
+    src = pkgs.fetchurl {
+      url = "mirror://pypi/${strings.substring 0 1 pname}/${pname}/${name}.tar.gz";
+      sha256 = "1x4d1gyvmdqh2zpdc415ak10d4yfli04pw4mxwfv2jnjk94d1y0k";
+    };
+
+    propagatedBuildInputs = with self; [ markdown pygments pyyaml docopt ];
+
+    meta = {
+      homepage = https://github.com/axiros/terminal_markdown_viewer;
+      description = "Terminal Markdown Viewer";
+      license = licenses.bsd;
+      maintainers = with maintainers; [ synthetica ];
+    };
+  };
 
   yamllint = callPackage ../development/python-modules/yamllint { };
 
