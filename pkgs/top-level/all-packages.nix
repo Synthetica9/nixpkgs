@@ -1306,6 +1306,8 @@ with pkgs;
 
   meson = callPackage ../development/tools/build-managers/meson { };
 
+  metabase = callPackage ../servers/metabase { };
+
   mp3blaster = callPackage ../applications/audio/mp3blaster { };
 
   mp3fs = callPackage ../tools/filesystems/mp3fs { };
@@ -1315,6 +1317,8 @@ with pkgs;
   mpdcron = callPackage ../tools/audio/mpdcron { };
 
   mpdris2 = callPackage ../tools/audio/mpdris2 { };
+
+  mq-cli = callPackage ../tools/system/mq-cli { };
 
   nfdump = callPackage ../tools/networking/nfdump { };
 
@@ -2927,6 +2931,7 @@ with pkgs;
             stdenv = llvmPackages_38.libcxxStdenv;
             libcxx = llvmPackages_38.libcxx;
             boost = boost160.override { inherit stdenv; };
+            avro-cpp_llvm = avro-cpp.override { inherit stdenv boost; };
           })
       irods
       irods-icommands;
@@ -3154,6 +3159,8 @@ with pkgs;
   krename = libsForQt5.callPackage ../applications/misc/krename { };
 
   kronometer = libsForQt5.callPackage ../tools/misc/kronometer { };
+
+  elisa = libsForQt5.callPackage ../applications/audio/elisa { };
 
   kdiff3 = libsForQt5.callPackage ../tools/text/kdiff3 { };
 
@@ -4913,6 +4920,8 @@ with pkgs;
 
   ssss = callPackage ../tools/security/ssss { };
 
+  stabber = callPackage ../misc/stabber { };
+
   stress = callPackage ../tools/system/stress { };
 
   stress-ng = callPackage ../tools/system/stress-ng { };
@@ -5021,7 +5030,7 @@ with pkgs;
     extraFonts = true;
   };
 
-  texmaker = callPackage ../applications/editors/texmaker { };
+  texmaker = libsForQt5.callPackage ../applications/editors/texmaker { };
 
   texstudio = callPackage ../applications/editors/texstudio { };
 
@@ -5265,6 +5274,8 @@ with pkgs;
 
   vncrec = callPackage ../tools/video/vncrec { };
 
+  vo-amrwbenc = callPackage ../development/libraries/vo-amrwbenc { };
+
   vobcopy = callPackage ../tools/cd-dvd/vobcopy { };
 
   vobsub2srt = callPackage ../tools/cd-dvd/vobsub2srt { };
@@ -5474,11 +5485,15 @@ with pkgs;
     inherit (gnome3) libgee;
   };
 
-  varnish = callPackage ../servers/varnish { };
-  varnish-modules = callPackage ../servers/varnish/modules.nix { };
-  varnish-digest = callPackage ../servers/varnish/digest.nix { };
-  varnish-geoip = callPackage ../servers/varnish/geoip.nix { };
-  varnish-rtstatus = callPackage ../servers/varnish/rtstatus.nix { };
+  inherit (callPackages ../servers/varnish { })
+    varnish4 varnish5 varnish6;
+  inherit (callPackages ../servers/varnish/packages.nix { })
+    varnish4Packages
+    varnish5Packages
+    varnish6Packages;
+
+  varnishPackages = varnish5Packages;
+  varnish = varnishPackages.varnish;
 
   venus = callPackage ../tools/misc/venus {
     python = python27;
@@ -7958,11 +7973,6 @@ with pkgs;
   nexus = callPackage ../development/tools/repository-managers/nexus { };
 
   nwjs = callPackage ../development/tools/nwjs {
-    gconf = pkgs.gnome2.GConf;
-  };
-
-  # only kept for zed, see https://github.com/NixOS/nixpkgs/issues/37361
-  nwjs_0_9 = callPackage ../development/tools/node-webkit/nw9.nix {
     gconf = pkgs.gnome2.GConf;
   };
 
@@ -12599,8 +12609,13 @@ with pkgs;
 
   postgresql_jdbc = callPackage ../servers/sql/postgresql/jdbc { };
 
+  inherit (callPackage ../servers/monitoring/prometheus {})
+      prometheus_1
+      prometheus_2
+      ;
+
   prom2json = callPackage ../servers/monitoring/prometheus/prom2json.nix { };
-  prometheus = callPackage ../servers/monitoring/prometheus { };
+  prometheus = prometheus_1;
   prometheus-alertmanager = callPackage ../servers/monitoring/prometheus/alertmanager.nix { };
   prometheus-bind-exporter = callPackage ../servers/monitoring/prometheus/bind-exporter.nix { };
   prometheus-blackbox-exporter = callPackage ../servers/monitoring/prometheus/blackbox-exporter.nix { };
@@ -14877,7 +14892,9 @@ with pkgs;
 
   centerim = callPackage ../applications/networking/instant-messengers/centerim { };
 
-  cgit = callPackage ../applications/version-management/git-and-tools/cgit { };
+  cgit = callPackage ../applications/version-management/git-and-tools/cgit {
+    inherit (python3Packages) python wrapPython pygments markdown;
+  };
 
   cgminer = callPackage ../applications/misc/cgminer {
     amdappsdk = amdappsdk28;
@@ -16065,7 +16082,9 @@ with pkgs;
 
   ifenslave = callPackage ../os-specific/linux/ifenslave { };
 
-  ii = callPackage ../applications/networking/irc/ii { };
+  ii = callPackage ../applications/networking/irc/ii {
+    stdenv = gccStdenv;
+  };
 
   ike = callPackage ../applications/networking/ike { };
 
@@ -17764,9 +17783,8 @@ with pkgs;
 
   taskserver = callPackage ../servers/misc/taskserver { };
 
-  tdesktop = qt5.callPackage ../applications/networking/instant-messengers/telegram/tdesktop {
-    inherit (pythonPackages) gyp;
-  };
+  tdesktopPackages = callPackage ../applications/networking/instant-messengers/telegram/tdesktop { };
+  tdesktop = tdesktopPackages.stable;
 
   telegram-cli = callPackage ../applications/networking/instant-messengers/telegram/telegram-cli { };
 
@@ -18587,10 +18605,6 @@ with pkgs;
 
   zathura = callPackage ../applications/misc/zathura {
     useMupdf = config.zathura.useMupdf or true;
-  };
-
-  zed = callPackage ../applications/editors/zed {
-    node_webkit = nwjs_0_9;
   };
 
   zeroc_ice = callPackage ../development/libraries/zeroc-ice {

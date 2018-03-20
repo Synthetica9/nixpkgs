@@ -63,6 +63,10 @@
     github = "DmitryTsygankov";
     name = "Dmitry Tsygankov";
   };
+  Esteth = {
+    email = "adam.copp@gmail.com";
+    name = "Adam Copp";
+  };
   FireyFly = {
     email = "nix@firefly.nu";
     github = "FireyFly";
@@ -621,6 +625,11 @@
     email = "brad@bradediger.com";
     github = "bradediger";
     name = "Brad Ediger";
+  };
+  brainrape = {
+    email = "martonboros@gmail.com";
+    github = "brainrape";
+    name = "Marton Boros";
   };
   bramd = {
     email = "bram@bramd.nl";
@@ -1542,6 +1551,11 @@
     email = "c.nix@hrdinka.at";
     github = "hrdinka";
     name = "Christoph Hrdinka";
+  };
+  hschaeidt = {
+    email = "he.schaeidt@gmail.com";
+    github = "hschaeidt";
+    name = "Hendrik Schaeidt";
   };
   htr = {
     email = "hugo@linux.com";
