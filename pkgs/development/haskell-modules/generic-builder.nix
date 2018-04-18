@@ -138,7 +138,7 @@ let
     (optionalString useCpphs "--with-cpphs=${cpphs}/bin/cpphs --ghc-options=-cpp --ghc-options=-pgmP${cpphs}/bin/cpphs --ghc-options=-optP--cpp")
     (enableFeature (enableDeadCodeElimination && !hostPlatform.isArm && !hostPlatform.isAarch64 && (versionAtLeast "8.0.1" ghc.version)) "split-objs")
     (enableFeature enableLibraryProfiling "library-profiling")
-    (optionalString (enableExecutableProfiling || enableLibraryProfiling) "--profiling-detail=${profilingDetail}")
+    (optionalString ((enableExecutableProfiling || enableLibraryProfiling) && versionOlder "8" ghc.version) "--profiling-detail=${profilingDetail}")
     (enableFeature enableExecutableProfiling (if versionOlder ghc.version "8" then "executable-profiling" else "profiling"))
     (enableFeature enableSharedLibraries "shared")
     (optionalString (versionAtLeast ghc.version "7.10") (enableFeature doCoverage "coverage"))
@@ -249,7 +249,11 @@ stdenv.mkDerivation ({
         configureFlags+=" --extra-lib-dirs=$p/lib"
       fi
     done
-  '' + (optionalString stdenv.isDarwin ''
+  ''
+  # only use the links hack if we're actually building dylibs. otherwise, the
+  # "dynamic-library-dirs" point to nonexistent paths, and the ln command becomes
+  # "ln -s $out/lib/links", which tries to recreate the links dir and fails
+  + (optionalString (stdenv.isDarwin && enableSharedLibraries) ''
     # Work around a limit in the macOS Sierra linker on the number of paths
     # referenced by any one dynamic library:
     #
@@ -348,6 +352,7 @@ stdenv.mkDerivation ({
       for exeDir in "$out/bin/"*.jsexe; do
         exe="''${exeDir%.jsexe}"
         printWords '#!${nodejs}/bin/node' > "$exe"
+        echo >> "$exe"
         cat "$exeDir/all.js" >> "$exe"
         chmod +x "$exe"
       done
@@ -391,7 +396,7 @@ stdenv.mkDerivation ({
       buildInputs = systemBuildInputs;
       nativeBuildInputs = [ ghcEnv ] ++ nativeBuildInputs;
       LANG = "en_US.UTF-8";
-      LOCALE_ARCHIVE = optionalString stdenv.isLinux "${glibcLocales}/lib/locale/locale-archive";
+      LOCALE_ARCHIVE = optionalString (stdenv.hostPlatform.libc == "glibc") "${glibcLocales}/lib/locale/locale-archive";
       shellHook = ''
         export NIX_${ghcCommandCaps}="${ghcEnv}/bin/${ghcCommand}"
         export NIX_${ghcCommandCaps}PKG="${ghcEnv}/bin/${ghcCommand}-pkg"
@@ -435,5 +440,5 @@ stdenv.mkDerivation ({
 // optionalAttrs (postFixup != "")      { inherit postFixup; }
 // optionalAttrs (dontStrip)            { inherit dontStrip; }
 // optionalAttrs (hardeningDisable != []) { inherit hardeningDisable; }
-// optionalAttrs (buildPlatform.isLinux){ LOCALE_ARCHIVE = "${glibcLocales}/lib/locale/locale-archive"; }
+// optionalAttrs (buildPlatform.libc == "glibc"){ LOCALE_ARCHIVE = "${glibcLocales}/lib/locale/locale-archive"; }
 )

@@ -167,15 +167,14 @@ let
   };
 
   luaevent = buildLuaPackage rec {
-    version = "0.4.3";
+    version = "0.4.4";
     name = "luaevent-${version}";
-    disabled = isLua52;
 
     src = fetchFromGitHub {
       owner = "harningt";
       repo = "luaevent";
       rev = "v${version}";
-      sha256 = "1c1n2zqx5rwfwkqaq1jj8gvx1vswvbihj2sy445w28icz1xfhpik";
+      sha256 = "1krzxr0jkv3gmhpckp02byhdd9s5dd0hpyqc8irc8i79dd8x0p53";
     };
 
     preBuild = ''
@@ -739,7 +738,7 @@ let
       owner = "libmpack";
       repo = "libmpack-lua";
       rev = version;
-      sha256 = "1nydi6xbmxwl1fmi32v5v8n74msnmzblzqaqnb102w6vkinampsb";
+      sha256 = "0l4k7qmwaa0zpxrlp27yp4pbbyiz3zgxywkm543q6wkzn6wmq8l8";
     };
 
     nativeBuildInputs = [ pkgconfig ];
