@@ -124,7 +124,6 @@ let
         preferLocalBuild = true;
       };
 
-
 in rec {
 
   channel = import lib/make-channel.nix { inherit pkgs nixpkgs version versionSuffix; };
@@ -132,6 +131,7 @@ in rec {
   manual = buildFromConfig ({ pkgs, ... }: { }) (config: config.system.build.manual.manual);
   manualEpub = (buildFromConfig ({ pkgs, ... }: { }) (config: config.system.build.manual.manualEpub));
   manpages = buildFromConfig ({ pkgs, ... }: { }) (config: config.system.build.manual.manpages);
+  manualGeneratedSources = buildFromConfig ({ pkgs, ... }: { }) (config: config.system.build.manual.generatedSources);
   options = (buildFromConfig ({ pkgs, ... }: { }) (config: config.system.build.manual.optionsJSON)).x86_64-linux;
 
 
@@ -268,6 +268,7 @@ in rec {
   tests.containers-hosts = callTest tests/containers-hosts.nix {};
   tests.containers-macvlans = callTest tests/containers-macvlans.nix {};
   tests.couchdb = callTest tests/couchdb.nix {};
+  tests.deluge = callTest tests/deluge.nix {};
   tests.docker = callTestOnMatchingSystems ["x86_64-linux"] tests/docker.nix {};
   tests.docker-tools = callTestOnMatchingSystems ["x86_64-linux"] tests/docker-tools.nix {};
   tests.docker-tools-overlay = callTestOnMatchingSystems ["x86_64-linux"] tests/docker-tools-overlay.nix {};
@@ -306,6 +307,7 @@ in rec {
   tests.influxdb = callTest tests/influxdb.nix {};
   tests.ipv6 = callTest tests/ipv6.nix {};
   tests.jenkins = callTest tests/jenkins.nix {};
+  tests.osquery = callTest tests/osquery.nix {};
   tests.plasma5 = callTest tests/plasma5.nix {};
   tests.plotinus = callTest tests/plotinus.nix {};
   tests.keymap = callSubTests tests/keymap.nix {};
@@ -384,6 +386,7 @@ in rec {
   tests.smokeping = callTest tests/smokeping.nix {};
   tests.snapper = callTest tests/snapper.nix {};
   tests.statsd = callTest tests/statsd.nix {};
+  tests.strongswan-swanctl = callTest tests/strongswan-swanctl.nix {};
   tests.sudo = callTest tests/sudo.nix {};
   tests.systemd = callTest tests/systemd.nix {};
   tests.switchTest = callTest tests/switch-test.nix {};
