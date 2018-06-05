@@ -73,38 +73,6 @@ self: super: {
     doHaddock       = false;
   });
 
-  ## Needs bump to a versioned attribute
-  hspec = overrideCabal super.hspec_2_5_0 (drv: {
-    ## Setup: Encountered missing dependencies:
-    ## hspec-core ==2.4.4, hspec-discover ==2.4.4
-    ##
-    ## error: while evaluating the attribute ‘buildInputs’ of the derivation ‘hspec-2.4.8’ at nixpkgs://pkgs/stdenv/generic/make-derivation.nix:148:11:
-    ## while evaluating the attribute ‘buildInputs’ of the derivation ‘stringbuilder-0.5.1’ at nixpkgs://pkgs/stdenv/generic/make-derivation.nix:148:11:
-    ## infinite recursion encountered, at undefined position
-    ## test suite causes an infinite loop
-    doCheck         = false;
-  });
-
-  ## Needs bump to a versioned attribute
-  hspec-core = overrideCabal super.hspec-core_2_5_0 (drv: {
-    ##     • No instance for (Semigroup Summary)
-    ##         arising from the superclasses of an instance declaration
-    ##     • In the instance declaration for ‘Monoid Summary’
-    ##
-    ## error: while evaluating the attribute ‘buildInputs’ of the derivation ‘hspec-core-2.4.8’ at nixpkgs://pkgs/stdenv/generic/make-derivation.nix:148:11:
-    ## while evaluating the attribute ‘buildInputs’ of the derivation ‘silently-1.2.5’ at nixpkgs://pkgs/stdenv/generic/make-derivation.nix:148:11:
-    ## while evaluating the attribute ‘buildInputs’ of the derivation ‘temporary-1.2.1.1’ at nixpkgs://pkgs/stdenv/generic/make-derivation.nix:148:11:
-    ## while evaluating the attribute ‘buildInputs’ of the derivation ‘base-compat-0.9.3’ at nixpkgs://pkgs/stdenv/generic/make-derivation.nix:148:11:
-    ## while evaluating the attribute ‘propagatedBuildInputs’ of the derivation ‘hspec-2.4.8’ at nixpkgs://pkgs/stdenv/generic/make-derivation.nix:148:11:
-    ## infinite recursion encountered, at undefined position
-    doCheck         = false;
-  });
-
-  ## Needs bump to a versioned attribute
-  ## Setup: Encountered missing dependencies:
-  ## hspec-discover ==2.4.8
-  hspec-discover = super.hspec-discover_2_5_0;
-
   ## On Hackage:
 
   ## Upstreamed, awaiting a Hackage release
@@ -152,7 +120,7 @@ self: super: {
     prePatch        = "cd lambdacube-ir.haskell; ";
   });
 
-  singletons = super.singletons_2_4_1;
+  singletons = dontCheck super.singletons_2_4_1;
   th-desugar = super.th-desugar_1_8;
 
   ## Upstreamed, awaiting a Hackage release
@@ -168,6 +136,8 @@ self: super: {
     };
   });
 
+  ## Bounds related: it wants base-compat 0.9.
+  criterion = super.criterion_1_4_1_0;
 
   ## Unmerged
 
@@ -322,14 +292,6 @@ self: super: {
     jailbreak       = true;
   });
 
-  jailbreak-cabal = super.jailbreak-cabal.override {
-    ##     • No instance for (Semigroup CDialect)
-    ##         arising from the superclasses of an instance declaration
-    ##     • In the instance declaration for ‘Monoid CDialect’
-    ## Undo the override in `configuration-common.nix`: GHC 8.4 bumps Cabal to 2.1:
-    Cabal = self.Cabal;
-  };
-
   kan-extensions = overrideCabal super.kan-extensions (drv: {
     ## Setup: Encountered missing dependencies:
     ## free ==4.*
@@ -440,18 +402,24 @@ self: super: {
     jailbreak       = true;
   });
 
+  # https://github.com/jcristovao/enclosed-exceptions/issues/12
+  enclosed-exceptions = dontCheck super.enclosed-exceptions;
+
   # Older versions don't compile.
-  brick = self.brick_0_37;
-  dhall = self.dhall_1_13_0;
-  dhall_1_13_0 = doJailbreak super.dhall_1_13_0;  # support ansi-terminal 0.8.x
+  base-compat = self.base-compat_0_10_1;
+  brick = self.brick_0_37_1;
+  dhall = self.dhall_1_14_0;
+  dhall_1_13_0 = doJailbreak super.dhall_1_14_0;  # support ansi-terminal 0.8.x
   HaTeX = self.HaTeX_3_19_0_0;
   hpack = self.hpack_0_28_2;
+  hspec = dontCheck super.hspec_2_5_1;
+  hspec-core = dontCheck super.hspec-core_2_5_1;
+  hspec-discover = self.hspec-discover_2_5_1;
   hspec-smallcheck = self.hspec-smallcheck_0_5_2;
   matrix = self.matrix_0_3_6_1;
-  pandoc = self.pandoc_2_2;
+  pandoc = self.pandoc_2_2_1;
   pandoc-types = self.pandoc-types_1_17_4_2;
-  wl-pprint-text = self.wl-pprint-text_1_1_1_1;
-  base-compat = self.base-compat_0_10_1;
+  wl-pprint-text = self.wl-pprint-text_1_2_0_0;
 
   # https://github.com/xmonad/xmonad/issues/155
   xmonad = addBuildDepend (appendPatch super.xmonad (pkgs.fetchpatch
@@ -473,5 +441,7 @@ self: super: {
     url = https://raw.githubusercontent.com/lambdabot/lambdabot/ghc-8.4.1/patches/flexible-defaults-0.0.1.2.patch;
     sha256 = "1bpsqq80h6nxm04wddgcgyzn0fjfsmhccmqb211jqswv5209znx8";
   });
+
+  lambdabot-core = appendPatch super.lambdabot-core ./patches/lambdabot-core-ghc-8.4.x-fix.patch;
 
 }

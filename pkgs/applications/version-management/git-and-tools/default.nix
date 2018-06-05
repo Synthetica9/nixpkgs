@@ -67,7 +67,9 @@ rec {
 
   git-crypt = callPackage ./git-crypt { };
 
-  git-dit = callPackage ./git-dit { };
+  git-dit = callPackage ./git-dit {
+    inherit (darwin.apple_sdk.frameworks) CoreFoundation Security;
+  };
 
   git-extras = callPackage ./git-extras { };
 
@@ -107,9 +109,7 @@ rec {
     inherit (darwin) Security;
   };
 
-  hubUnstable = callPackage ./hub/unstable.nix {
-    inherit (darwin) Security;
-  };
+  hubUnstable = throw "use gitAndTools.hub instead";
 
   qgit = qt5.callPackage ./qgit { };
 

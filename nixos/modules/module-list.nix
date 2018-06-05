@@ -102,6 +102,7 @@
   ./programs/qt5ct.nix
   ./programs/rootston.nix
   ./programs/screen.nix
+  ./programs/sedutil.nix
   ./programs/slock.nix
   ./programs/shadow.nix
   ./programs/shell.nix
@@ -121,6 +122,7 @@
   ./programs/wireshark.nix
   ./programs/xfs_quota.nix
   ./programs/xonsh.nix
+  ./programs/xss-lock.nix
   ./programs/yabar.nix
   ./programs/zsh/oh-my-zsh.nix
   ./programs/zsh/zsh.nix
@@ -148,6 +150,7 @@
   ./security/rtkit.nix
   ./security/wrappers/default.nix
   ./security/sudo.nix
+  ./services/admin/oxidized.nix
   ./services/admin/salt/master.nix
   ./services/admin/salt/minion.nix
   ./services/amqp/activemq/default.nix
@@ -382,6 +385,7 @@
   ./services/misc/sundtek.nix
   ./services/misc/svnserve.nix
   ./services/misc/synergy.nix
+  ./services/misc/sysprof.nix
   ./services/misc/taskserver
   ./services/misc/tzupdate.nix
   ./services/misc/uhub.nix
@@ -510,6 +514,7 @@
   ./services/networking/miniupnpd.nix
   ./services/networking/mosquitto.nix
   ./services/networking/monero.nix
+  ./services/networking/morty.nix
   ./services/networking/miredo.nix
   ./services/networking/mstpd.nix
   ./services/networking/murmur.nix
@@ -568,6 +573,7 @@
   ./services/networking/strongswan.nix
   ./services/networking/strongswan-swanctl/module.nix
   ./services/networking/stunnel.nix
+  ./services/networking/stubby.nix
   ./services/networking/supplicant.nix
   ./services/networking/supybot.nix
   ./services/networking/syncthing.nix
@@ -662,6 +668,7 @@
   ./services/web-servers/lighttpd/default.nix
   ./services/web-servers/lighttpd/gitweb.nix
   ./services/web-servers/lighttpd/inginious.nix
+  ./services/web-servers/meguca.nix
   ./services/web-servers/mighttpd2.nix
   ./services/web-servers/minio.nix
   ./services/web-servers/nginx/default.nix
@@ -781,6 +788,7 @@
   ./virtualisation/lxd.nix
   ./virtualisation/amazon-options.nix
   ./virtualisation/hyperv-guest.nix
+  ./virtualisation/kvmgt.nix
   ./virtualisation/openvswitch.nix
   ./virtualisation/parallels-guest.nix
   ./virtualisation/qemu-guest-agent.nix
