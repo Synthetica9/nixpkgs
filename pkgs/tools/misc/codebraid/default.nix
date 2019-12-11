@@ -1,12 +1,14 @@
-{ stdenv, python3Packages }:
+{ stdenv, python3Packages, fetchFromGitHub }:
 
 python3Packages.buildPythonApplication rec {
   pname = "codebraid";
-  version = "0.4.0";
+  version = "0.5.0-unstable-2019-12-11";
 
-  src = python3Packages.fetchPypi {
-    inherit pname version;
-    sha256 = "1654kmf4lj8j56aachjfslld9khgzzldx9v9zknvmcb380agsln9";
+  src = fetchFromGitHub {
+    owner = "gpoore";
+    repo = pname;
+    rev = "fac1b29";
+    sha256 = "0ldfrkkip7i1fdyz1iydyik3mhm0xv0jvxnl37r7g707dl38vf3h";
   };
 
   propagatedBuildInputs = with python3Packages; [ bespon ];
