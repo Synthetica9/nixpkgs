@@ -6205,6 +6205,8 @@ in {
 
   pandocfilters = callPackage ../development/python-modules/pandocfilters { };
 
+  panflute = callPackage ../development/python-modules/panflute { };
+
   htmltreediff = callPackage ../development/python-modules/htmltreediff { };
 
   repeated_test = callPackage ../development/python-modules/repeated_test { };
