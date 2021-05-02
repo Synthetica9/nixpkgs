@@ -11,7 +11,7 @@ import sys
 import tempfile
 
 class CalledProcessError(Exception):
-    process: asyncio.subprocess.Process
+     process: asyncio.subprocess.Process
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
