@@ -15,7 +15,7 @@ class CalledProcessError(Exception):
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
-
+    
 async def check_subprocess(*args, **kwargs):
     """
     Emulate check argument of subprocess.run function.
