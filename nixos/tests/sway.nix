@@ -25,6 +25,21 @@ import ./make-test-python.nix ({ pkgs, lib, ...} :
   enableOCR = true;
 
   testScript = { nodes, ... }: ''
+    from contextlib import contextmanager
+
+
+    @contextmanager
+    def alacritty(name, **env):
+        env = " ".join(f"{k}={v}" for (k, v) in env.items())
+        machine.succeed(f"su - alice -c 'swaymsg exec {env} alacritty'")
+        machine.wait_for_text("alice@machine")
+        yield
+        machine.sleep(5)
+        machine.screenshot(f"alacritty_{name}")
+        machine.send_key("alt-shift-q")
+        machine.wait_until_fails("pgrep alacritty")
+
+
     start_all()
     machine.wait_for_unit("multi-user.target")
     machine.wait_until_tty_matches(1, "alice\@machine")
@@ -37,27 +52,15 @@ import ./make-test-python.nix ({ pkgs, lib, ...} :
     machine.wait_for_file("/run/user/1000/wayland-1")
     machine.wait_for_file("/tmp/sway-ipc.sock")
 
+    machine.sleep(10)
     # Test XWayland:
-    machine.succeed(
-        "su - alice -c 'swaymsg exec WINIT_UNIX_BACKEND=x11 WAYLAND_DISPLAY=invalid alacritty'"
-    )
-    machine.wait_for_text("alice@machine")
-    machine.send_chars("glinfo | head -n 3\n")
-    machine.sleep(5)
-    machine.screenshot("alacritty_glinfo")
-    machine.succeed("pkill alacritty")
+    with alacritty("glinfo", WINIT_UNIX_BACKEND="x11", WAYLAND_DISPLAY="invalid"):
+        machine.send_chars("glinfo | head -n 3\n")
 
     # Start a terminal (Alacritty) on workspace 3:
     machine.send_key("alt-3")
-    machine.succeed(
-        "su - alice -c 'swaymsg exec WINIT_UNIX_BACKEND=wayland DISPLAY=invalid alacritty'"
-    )
-    machine.wait_for_text("alice@machine")
-    machine.send_chars("wayland-info\n")
-    machine.sleep(5)
-    machine.screenshot("alacritty_wayland_info")
-    machine.send_key("alt-shift-q")
-    machine.wait_until_fails("pgrep alacritty")
+    with alacritty("wayland_info", WINIT_UNIX_BACKEND="wayland", DISPLAY="invalid"):
+        machine.send_chars("wayland-info\n")
 
     # Test swaynag:
     machine.send_key("alt-shift-e")
