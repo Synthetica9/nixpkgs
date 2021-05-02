@@ -1,7 +1,7 @@
 { lib, stdenv, fetchFromGitHub, readline, libedit, bc
 , avxSupport ? stdenv.hostPlatform.avxSupport
 }:
-
+#asdf
 stdenv.mkDerivation rec {
   pname = "j";
   version = "902";
