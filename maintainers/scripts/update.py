@@ -80,7 +80,7 @@ def make_worktree() -> Generator[Tuple[str, str], None, None]:
         subprocess.run(['git', 'branch', '-D', branch_name])
 
 async def commit_changes(name: str, merge_lock: asyncio.Lock, worktree: str, branch: str, changes: List[Dict]) -> None:
-    for change in changes:
+     for change in changes:
         # Git can only handle a single index operation at a time
         async with merge_lock:
             await check_subprocess('git', 'add', *change['files'], cwd=worktree)
