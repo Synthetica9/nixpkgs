@@ -13,7 +13,7 @@ import ./make-test-python.nix ({ pkgs, lib, ...} :
 
     environment = {
       # For glinfo and wayland-info:
-      systemPackages = with pkgs; [ mesa-demos wayland-utils ];
+      systemPackages = with pkgs; [ mesa-demos wayland-utils alacritty ];
       # Use a fixed SWAYSOCK path (for swaymsg):
       variables = {
         "SWAYSOCK" = "/tmp/sway-ipc.sock";
@@ -72,6 +72,7 @@ import ./make-test-python.nix ({ pkgs, lib, ...} :
     machine.screenshot("alacritty_glinfo")
     machine.succeed("pkill alacritty")
 
+    # TODO: Switch to foot (or add an additional foot test) and use $mod+Return:
     # Start a terminal (Alacritty) on workspace 3:
     machine.send_key("alt-3")
     machine.succeed(
