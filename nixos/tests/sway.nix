@@ -26,10 +26,24 @@ import ./make-test-python.nix ({ pkgs, lib, ... }:
         };
         # For convenience:
         shellAliases = {
-          test-x11 = "glinfo | head -n 3 | tee /tmp/test-x11.out && touch /tmp/test-x11-exit-ok";
+          test-x11 = "glinfo | tee /tmp/test-x11.out && touch /tmp/test-x11-exit-ok";
           test-wayland = "wayland-info | tee /tmp/test-wayland.out && touch /tmp/test-wayland-exit-ok";
         };
+
+        # To help with OCR:
+        etc."xdg/foot/foot.ini".text = lib.generators.toINI { } {
+          main = {
+            font = "inconsolata:size=14";
+          };
+          colors = rec {
+            foreground = "000000";
+            background = "ffffff";
+            regular2 = foreground;
+          };
+        };
       };
+
+      fonts.fonts = [ pkgs.inconsolata ];
 
       # Automatically configure and start Sway when logging in on tty1:
       programs.bash.loginShellInit = ''
@@ -66,30 +80,28 @@ import ./make-test-python.nix ({ pkgs, lib, ... }:
       machine.wait_for_file("/run/user/1000/wayland-1")
       machine.wait_for_file("/tmp/sway-ipc.sock")
 
-      # Test XWayland:
+      # Test XWayland (foot does not support X):
       machine.succeed(
           "su - alice -c 'swaymsg exec WINIT_UNIX_BACKEND=x11 WAYLAND_DISPLAY=invalid alacritty'"
       )
       machine.wait_for_text("alice@machine")
       machine.send_chars("test-x11\n")
       machine.wait_for_file("/tmp/test-x11-exit-ok")
-      print(machine.succeed("cat /tmp/test-x11.out"))
-      machine.screenshot("alacritty_glinfo")
+      machine.copy_from_vm("/tmp/test-x11.out")
+      machine.screenshot("alacrittyglinfo")
       machine.succeed("pkill alacritty")
 
-      # TODO: Switch to foot (or add an additional foot test) and use $mod+Return:
-      # Start a terminal (Alacritty) on workspace 3:
+      # Start a terminal (foot) on workspace 3:
       machine.send_key("alt-3")
-      machine.succeed(
-          "su - alice -c 'swaymsg exec WINIT_UNIX_BACKEND=wayland DISPLAY=invalid alacritty'"
-      )
+      machine.sleep(3)
+      machine.send_key("alt-ret")
       machine.wait_for_text("alice@machine")
       machine.send_chars("test-wayland\n")
       machine.wait_for_file("/tmp/test-wayland-exit-ok")
-      print(machine.succeed("cat /tmp/test-wayland.out"))
-      machine.screenshot("alacritty_wayland_info")
+      machine.copy_from_vm("/tmp/test-wayland.out")
+      machine.screenshot("foot_wayland_info")
       machine.send_key("alt-shift-q")
-      machine.wait_until_fails("pgrep alacritty")
+      machine.wait_until_fails("pgrep foot")
 
       # Test gpg-agent starting pinentry-gnome3 via D-Bus (tests if
       # $WAYLAND_DISPLAY is correctly imported into the D-Bus user env):
