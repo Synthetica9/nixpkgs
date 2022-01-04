@@ -28080,6 +28080,7 @@ with pkgs;
     inherit (darwin.apple_sdk.frameworks) CoreServices Cocoa Hypervisor;
     inherit (darwin.stubs) rez setfile;
     inherit (darwin) sigtool;
+    meson = meson_0_60;
   };
 
   qemu-utils = callPackage ../applications/virtualization/qemu/utils.nix {};
